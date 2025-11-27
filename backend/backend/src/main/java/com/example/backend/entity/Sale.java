@@ -11,7 +11,7 @@ public class Sale {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SaleID")
+    @Column(name = "SaleID", insertable = false, updatable = false)
     private Integer saleId;
 
     @Column(name = "InvoiceNumber", nullable = false)

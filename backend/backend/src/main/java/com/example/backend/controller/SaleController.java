@@ -4,6 +4,7 @@ import com.example.backend.entity.Sale;
 import com.example.backend.entity.Painting;
 import com.example.backend.service.SaleService;
 import com.example.backend.repository.SaleRepository;
+import com.example.backend.repository.PaintingRepository;
 import com.example.backend.dto.SaleDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -27,6 +29,9 @@ public class SaleController {
 
     @Autowired
     private SaleRepository saleRepository;
+
+    @Autowired
+    private PaintingRepository paintingRepository;
 
     @Operation(summary = "Get all sales")
     @ApiResponse(responseCode = "200", description = "List of all sales")
@@ -46,13 +51,13 @@ public class SaleController {
         Sale sale = new Sale();
         sale.setInvoiceNumber(saleDTO.getInvoiceNumber());
         sale.setSalePrice(saleDTO.getSalePrice());
+        sale.setSaleDate(LocalDate.now());
 
-        Painting painting = new Painting();
-        painting.setPaintingId(saleDTO.getPaintingId());
+        Painting painting = paintingRepository.findById(saleDTO.getPaintingId())
+                .orElseThrow(() -> new RuntimeException("Картина не найдена"));
         sale.setPainting(painting);
 
         Sale createdSale = saleService.createSale(sale);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(createdSale);
     }
 }
